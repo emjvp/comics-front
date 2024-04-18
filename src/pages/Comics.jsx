@@ -7,32 +7,45 @@ const Comics = () => {
 
     const [ comicsData, setCommicsData ] = useState([{}]);
      
-    const dataPromise = fetcherGet('http://localhost:3001/api/comics/12/0');
 
     useEffect(() => {
+        
+        const fetchComicsData = async () => {
 
-        dataPromise.then((response) => {
-            const { data } = response;
-            const { results } = data;
-            console.log('results: ', results);
-            setCommicsData(results);
-        })
-        .catch((err) => {
-            console.log(err);
-            console.log(err.message);
-        });
+            const cachedData = JSON.parse(localStorage.getItem('cachedData'));
+
+            if (cachedData) {
+                setCommicsData(cachedData);
+            } else {
+
+                const dataPromise = fetcherGet('http://localhost:3001/api/comics/12/0');
+
+                dataPromise.then((response) => {
+                    const { data } = response;
+                    const { results } = data;
+                    setCommicsData(results);
+
+                    localStorage.setItem('cachedData', JSON.stringify(results));
+                })
+                .catch((err) => {
+                    console.log(err);
+                    console.log(err.message);
+                });
+            }
+        }
+
+        fetchComicsData();
 
     }, []);
 
-    console.log('comicsData: ', comicsData);
 
     return(
         <Row>
             {
-                comicsData.length && comicsData.map((comic) => {
+                  comicsData.length && comicsData.map((comic) => {
                     return (
                         <Col md={4} >
-                            <ComicCard comic={comic}/>
+                            <ComicCard key={comic.id} comic={comic}/>
                        </Col>
                     )
                 })            
