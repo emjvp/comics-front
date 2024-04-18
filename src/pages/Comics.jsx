@@ -14,23 +14,28 @@ const Comics = () => {
         dataPromise.then((response) => {
             const { data } = response;
             const { results } = data;
+            console.log('results: ', results);
             setCommicsData(results);
         })
         .catch((err) => {
+            console.log(err);
             console.log(err.message);
         });
 
-    });
+    }, []);
+
+    console.log('comicsData: ', comicsData);
 
     return(
         <Row>
             {
                 comicsData.length && comicsData.map((comic) => {
                     return (
-                    <Col md={4}>
-                        <ComicCard comic={comic} />
-                    </Col>)
-                })                
+                        <Col md={4} >
+                            <ComicCard comic={comic}/>
+                       </Col>
+                    )
+                })            
             }
         </Row>
     );
